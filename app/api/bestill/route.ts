@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { menuItems } from '@/lib/menu'
 
 const N8N_WEBHOOK = 'https://n8n.ujstudionorge.com/webhook/kebab-orders'
+const N8N_SAVE_ORDER = 'https://n8n.ujstudionorge.com/webhook/kebab-save-order'
 
 export async function POST(req: NextRequest) {
   try {
@@ -51,6 +52,20 @@ export async function POST(req: NextRequest) {
       console.error('n8n webhook error:', await res.text())
       return NextResponse.json({ error: 'Webhook failed' }, { status: 502 })
     }
+
+    // Also save to order store for kiosk display (fire-and-forget, don't block on failure)
+    fetch(N8N_SAVE_ORDER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderNumber,
+        customerName,
+        customerPhone,
+        pickupTime: pickupTime || 'Snarest',
+        items,
+        total: verifiedTotal,
+      }),
+    }).catch(e => console.error('Order store save failed:', e))
 
     return NextResponse.json({ success: true, orderNumber, total: verifiedTotal })
   } catch (err) {
