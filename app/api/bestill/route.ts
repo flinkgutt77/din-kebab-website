@@ -42,30 +42,42 @@ export async function POST(req: NextRequest) {
       source: 'website',
     }
 
-    const res = await fetch(N8N_WEBHOOK, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
+    // Run both webhooks in parallel — must await both before returning
+    // (Vercel kills unawaited fetches the moment the response is sent)
+    const [telegramResult, storeResult] = await Promise.allSettled([
+      fetch(N8N_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }),
+      fetch(N8N_SAVE_ORDER, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderNumber,
+          customerName,
+          customerPhone,
+          pickupTime: pickupTime || 'Snarest',
+          items,
+          total: verifiedTotal,
+        }),
+      }),
+    ])
 
-    if (!res.ok) {
-      console.error('n8n webhook error:', await res.text())
+    // Telegram is critical — fail if it didn't work
+    if (telegramResult.status === 'rejected') {
+      console.error('n8n webhook error:', telegramResult.reason)
+      return NextResponse.json({ error: 'Webhook failed' }, { status: 502 })
+    }
+    if (!telegramResult.value.ok) {
+      console.error('n8n webhook error:', await telegramResult.value.text())
       return NextResponse.json({ error: 'Webhook failed' }, { status: 502 })
     }
 
-    // Also save to order store for kiosk display (fire-and-forget, don't block on failure)
-    fetch(N8N_SAVE_ORDER, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        orderNumber,
-        customerName,
-        customerPhone,
-        pickupTime: pickupTime || 'Snarest',
-        items,
-        total: verifiedTotal,
-      }),
-    }).catch(e => console.error('Order store save failed:', e))
+    // Kiosk store is best-effort — log but don't fail the order
+    if (storeResult.status === 'rejected') {
+      console.error('Order store save failed:', storeResult.reason)
+    }
 
     return NextResponse.json({ success: true, orderNumber, total: verifiedTotal })
   } catch (err) {
