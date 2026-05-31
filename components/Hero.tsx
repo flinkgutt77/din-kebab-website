@@ -34,7 +34,7 @@ export default function Hero() {
         }}>
           🛒 Bestill nå
         </Link>
-        <a href="tel:+4798075638" style={{
+        <a href="tel:+4722284000" style={{
           background: 'rgba(0,0,0,0.2)',
           color: '#fff',
           padding: '14px 32px',

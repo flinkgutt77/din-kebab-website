@@ -101,9 +101,7 @@ export default function OrderForm() {
       }}>
         {loading ? 'Sender...' : 'Send bestilling →'}
       </button>
-      <p style={{ color: '#555', fontSize: '12px', textAlign: 'center', marginTop: '12px' }}>
-        Betaling skjer ved henting i restauranten
-      </p>
+
     </form>
   )
 }
