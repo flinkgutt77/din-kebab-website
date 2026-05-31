@@ -18,6 +18,7 @@ type Order = {
   customerName: string
   customerPhone: string
   pickupTime: string
+  notat?: string
   items: OrderItem[]
   total: number
   time: string
@@ -219,6 +220,18 @@ function OrderCard({
           ⏰ {order.pickupTime}
         </div>
       </div>
+
+      {/* Notat */}
+      {order.notat && (
+        <div style={{
+          padding: '8px 16px',
+          borderBottom: '1px solid #222',
+          background: order.done ? 'transparent' : '#0d1a00',
+        }}>
+          <span style={{ fontSize: '11px', color: '#7DC61F', fontWeight: 700, letterSpacing: '1px' }}>📝 NOTAT: </span>
+          <span style={{ fontSize: '13px', color: order.done ? '#444' : '#e0e0e0' }}>{order.notat}</span>
+        </div>
+      )}
 
       {/* Items */}
       <div style={{ padding: '12px 16px', borderBottom: '1px solid #222' }}>

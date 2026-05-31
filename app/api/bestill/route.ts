@@ -8,7 +8,7 @@ const N8N_SAVE_ORDER = 'https://n8n.ujstudionorge.com/webhook/kebab-save-order'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { orderNumber, customerName, customerPhone, pickupTime, items } = body
+    const { orderNumber, customerName, customerPhone, pickupTime, notat, items } = body
 
     if (!customerName || !customerPhone || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: 'Mangler påkrevde felt' }, { status: 400 })
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       pickup_time: pickupTime || 'Snarest',
       items,
       total: verifiedTotal,
-      message: `🆕 Ny nettbestilling #${orderNumber}!\n\n👤 ${customerName}\n📞 ${customerPhone}\n⏰ Hentes: ${pickupTime || 'Snarest'}\n\n${itemLines}\n\n💰 Totalt: ${verifiedTotal},–\n💳 Betales ved henting`,
+      message: `🆕 Ny nettbestilling #${orderNumber}!\n\n👤 ${customerName}\n📞 ${customerPhone}\n⏰ Hentes: ${pickupTime || 'Snarest'}\n\n${itemLines}\n\n💰 Totalt: ${verifiedTotal},–\n💳 Betales ved henting${notat ? `\n\n📝 Notat: ${notat}` : ''}`,
       source: 'website',
     }
 
@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
           customerName,
           customerPhone,
           pickupTime: pickupTime || 'Snarest',
+          notat: notat || '',
           items,
           total: verifiedTotal,
         }),

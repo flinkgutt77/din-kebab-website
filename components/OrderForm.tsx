@@ -8,7 +8,7 @@ import { useCart } from '@/lib/cart'
 export default function OrderForm() {
   const { items, total, clearCart } = useCart()
   const router = useRouter()
-  const [form, setForm] = useState({ name: '', phone: '', pickupTime: '' })
+  const [form, setForm] = useState({ name: '', phone: '', pickupTime: '', notat: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -32,6 +32,7 @@ export default function OrderForm() {
           customerName: form.name,
           customerPhone: form.phone,
           pickupTime: form.pickupTime || 'Snarest',
+          notat: form.notat.trim(),
           items,
           total,
         }),
@@ -80,10 +81,25 @@ export default function OrderForm() {
           onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required
           type="tel" minLength={8} />
       </div>
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{ marginBottom: '16px' }}>
         <label style={labelStyle}>Ønsket hentingstid</label>
         <input style={inputStyle} placeholder="f.eks. 18:30 (valgfri)" value={form.pickupTime}
           onChange={e => setForm(f => ({ ...f, pickupTime: e.target.value }))} />
+      </div>
+      <div style={{ marginBottom: '24px' }}>
+        <label style={labelStyle}>Notat til restauranten</label>
+        <textarea
+          style={{ ...inputStyle, resize: 'vertical', minHeight: '80px', lineHeight: '1.5' }}
+          placeholder="f.eks. ingen løk, ekstra saus, allergi... (valgfri)"
+          value={form.notat}
+          onChange={e => setForm(f => ({ ...f, notat: e.target.value }))}
+          maxLength={300}
+        />
+        {form.notat.length > 0 && (
+          <div style={{ textAlign: 'right', fontSize: '11px', color: '#555', marginTop: '4px' }}>
+            {form.notat.length}/300
+          </div>
+        )}
       </div>
 
       {error && <p style={{ color: '#ff4444', marginBottom: '16px', fontSize: '14px' }}>{error}</p>}
