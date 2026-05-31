@@ -19,7 +19,7 @@ export default function Hero() {
         Din Kebab<br />Pizza &amp; Grill
       </h1>
       <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '16px', marginBottom: '32px' }}>
-        Pizza · Kebab · Hamburger · Henting
+        Pizza · Kebab · Hamburger
       </p>
 
       <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '40px' }}>
