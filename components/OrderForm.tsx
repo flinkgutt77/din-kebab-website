@@ -2,12 +2,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useCart } from '@/lib/cart'
 
 export default function OrderForm() {
   const { items, total, clearCart } = useCart()
-  const router = useRouter()
   const [form, setForm] = useState({ name: '', phone: '', pickupTime: '', notat: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -24,7 +22,7 @@ export default function OrderForm() {
     const orderNumber = String(Date.now()).slice(-5)
 
     try {
-      const res = await fetch('/api/bestill', {
+      const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -38,12 +36,15 @@ export default function OrderForm() {
         }),
       })
 
-      if (!res.ok) throw new Error('Noe gikk galt')
+      const data = await res.json()
+      if (!res.ok || !data.url) throw new Error(data.error || 'Noe gikk galt')
 
+      // Clear cart before redirecting to Stripe
       clearCart()
-      router.push(`/bekreftelse?nr=${orderNumber}&navn=${encodeURIComponent(form.name)}&total=${total}`)
-    } catch {
-      setError('Kunne ikke sende bestillingen. Prøv igjen eller ring oss.')
+      window.location.href = data.url
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Ukjent feil'
+      setError(msg || 'Kunne ikke starte betaling. Prøv igjen eller ring oss.')
       setLoading(false)
     }
   }
@@ -102,6 +103,23 @@ export default function OrderForm() {
         )}
       </div>
 
+      {/* Payment method icons */}
+      <div style={{
+        display: 'flex',
+        gap: '8px',
+        alignItems: 'center',
+        marginBottom: '16px',
+        padding: '12px',
+        background: '#1a1a1a',
+        borderRadius: '8px',
+        border: '1px solid #2a2a2a',
+      }}>
+        <span style={{ fontSize: '12px', color: '#555', marginRight: '4px' }}>Betaling:</span>
+        <span style={{ background: '#fff', borderRadius: '4px', padding: '2px 8px', fontSize: '12px', fontWeight: 700, color: '#1a1a72' }}>VIPPS</span>
+        <span style={{ background: '#fff', borderRadius: '4px', padding: '2px 8px', fontSize: '11px', fontWeight: 700, color: '#000' }}>💳 Kort</span>
+        <span style={{ background: '#000', borderRadius: '4px', padding: '2px 8px', fontSize: '11px', fontWeight: 700, color: '#fff', border: '1px solid #444' }}> Apple Pay</span>
+      </div>
+
       {error && <p style={{ color: '#ff4444', marginBottom: '16px', fontSize: '14px' }}>{error}</p>}
 
       <button type="submit" disabled={loading} style={{
@@ -115,9 +133,12 @@ export default function OrderForm() {
         fontSize: '16px',
         cursor: loading ? 'not-allowed' : 'pointer',
       }}>
-        {loading ? 'Sender...' : 'Send bestilling →'}
+        {loading ? 'Videresender til betaling...' : '🔒 Betal nå →'}
       </button>
 
+      <p style={{ textAlign: 'center', color: '#555', fontSize: '12px', marginTop: '12px' }}>
+        Sikker betaling via Stripe
+      </p>
     </form>
   )
 }

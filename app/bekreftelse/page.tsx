@@ -4,13 +4,72 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Navbar from '@/components/Navbar'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 
 function BekreftelsContent() {
   const params = useSearchParams()
+  const sessionId = params.get('session_id')
   const nr = params.get('nr')
-  const navn = params.get('navn')
-  const total = params.get('total')
+
+  const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading')
+  const [orderData, setOrderData] = useState<{ orderNumber: string; customerName: string; total: number } | null>(null)
+
+  useEffect(() => {
+    if (!sessionId) {
+      setStatus('error')
+      return
+    }
+
+    // Confirm payment and notify restaurant
+    fetch('/api/confirm-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          setOrderData(data)
+          setStatus('ok')
+        } else {
+          setStatus('error')
+        }
+      })
+      .catch(() => setStatus('error'))
+  }, [sessionId])
+
+  if (status === 'loading') {
+    return (
+      <main style={{ background: '#111', minHeight: '100vh', padding: '60px 24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏳</div>
+          <p style={{ color: '#7DC61F', fontSize: '18px', fontWeight: 700 }}>Bekrefter betaling...</p>
+        </div>
+      </main>
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <main style={{ background: '#111', minHeight: '100vh', padding: '60px 24px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+          <h1 style={{ color: '#ff4444', fontWeight: 900, fontSize: '24px', marginBottom: '12px' }}>
+            Noe gikk galt
+          </h1>
+          <p style={{ color: '#888', marginBottom: '24px' }}>
+            Betalingen kan ha gått gjennom — ring oss på{' '}
+            <a href="tel:+4722284000" style={{ color: '#7DC61F' }}>+47 22 28 40 00</a> for å bekrefte.
+          </p>
+          <Link href="/" style={{ color: '#7DC61F', fontWeight: 700, textDecoration: 'none' }}>
+            ← Tilbake til menyen
+          </Link>
+        </div>
+      </main>
+    )
+  }
+
+  const { orderNumber, customerName, total } = orderData!
 
   return (
     <main style={{ background: '#111', minHeight: '100vh', padding: '60px 24px', textAlign: 'center' }}>
@@ -20,7 +79,7 @@ function BekreftelsContent() {
           Bestilling mottatt!
         </h1>
         <p style={{ color: '#666', fontSize: '16px', marginBottom: '32px' }}>
-          Ordrenr: <strong style={{ color: '#fff' }}>#{nr}</strong>
+          Ordrenr: <strong style={{ color: '#fff' }}>#{orderNumber || nr}</strong>
         </p>
 
         <div style={{
@@ -31,10 +90,13 @@ function BekreftelsContent() {
           marginBottom: '32px',
           textAlign: 'left',
         }}>
-          <p style={{ color: '#ccc', margin: '0 0 8px' }}>👤 {navn}</p>
-          <p style={{ color: '#ccc', margin: '0 0 8px' }}>📍 Hentes på Lambertseter</p>
-          <p style={{ color: '#C8E831', fontWeight: 900, fontSize: '18px', margin: 0 }}>
+          <p style={{ color: '#ccc', margin: '0 0 8px' }}>👤 {customerName}</p>
+          <p style={{ color: '#ccc', margin: '0 0 8px' }}>📍 Hentes på Feltspatveien 25, Oslo</p>
+          <p style={{ color: '#C8E831', fontWeight: 900, fontSize: '18px', margin: '0 0 8px' }}>
             💰 Totalt: {total},–
+          </p>
+          <p style={{ color: '#7DC61F', fontSize: '13px', margin: 0 }}>
+            ✓ Betalt online
           </p>
         </div>
 
@@ -48,7 +110,7 @@ function BekreftelsContent() {
             📲 Restauranten er varslet!
           </p>
           <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '13px', margin: 0 }}>
-            Spørsmål? Ring oss på <a href="tel:+4798075638" style={{ color: '#ffff00' }}>+47 980 75 638</a>
+            Spørsmål? Ring oss på <a href="tel:+4722284000" style={{ color: '#ffff00' }}>+47 22 28 40 00</a>
           </p>
         </div>
 
