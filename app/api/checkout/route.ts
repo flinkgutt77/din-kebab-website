@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      payment_method_types: ['card', 'vipps'] as Stripe.Checkout.SessionCreateParams.PaymentMethodType[],
+      payment_method_types: ['card'],
       locale: 'nb',
       line_items: lineItems,
       success_url: `${SITE_URL}/bekreftelse?session_id={CHECKOUT_SESSION_ID}&nr=${orderNumber}`,
@@ -58,8 +58,9 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({ url: session.url })
-  } catch (err) {
-    console.error('Checkout error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+  } catch (err: unknown) {
+    const stripeMsg = (err as { message?: string })?.message || String(err)
+    console.error('Checkout error:', stripeMsg)
+    return NextResponse.json({ error: stripeMsg }, { status: 500 })
   }
 }
