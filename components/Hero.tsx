@@ -8,9 +8,6 @@ export default function Hero() {
       padding: '60px 24px',
       textAlign: 'center',
     }}>
-      <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '16px' }}>
-        Lambertseter, Oslo
-      </p>
       <h1 style={{
         color: '#fff',
         fontSize: 'clamp(32px, 6vw, 64px)',
