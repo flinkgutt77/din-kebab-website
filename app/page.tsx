@@ -18,7 +18,7 @@ export default function Home() {
           </h2>
           <p style={{ color: '#ccc', fontSize: '16px', marginBottom: '8px' }}>📍 Feltspatveien 25, 1155 Oslo</p>
           <p style={{ color: '#ccc', fontSize: '16px', marginBottom: '8px' }}>📞 <a href="tel:+4798075638" style={{ color: '#7DC61F' }}>+47 980 75 638</a></p>
-          <p style={{ color: '#ccc', fontSize: '16px', marginBottom: '8px' }}>🕐 Man–Søn: 12:00–22:00</p>
+          <p style={{ color: '#ccc', fontSize: '16px', marginBottom: '8px' }}>🕐 Man–Fre: 11:00–23:00 · Lør–Søn: 12:00–23:00</p>
           <p style={{ color: '#666', fontSize: '13px', marginTop: '16px' }}>
             Bestill online og hent i restauranten. Betaling ved henting.
           </p>
