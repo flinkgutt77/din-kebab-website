@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      payment_method_types: ['card', 'vipps'],
+      payment_method_types: ['card', 'vipps'] as Stripe.Checkout.SessionCreateParams.PaymentMethodType[],
       locale: 'nb',
       line_items: lineItems,
       success_url: `${SITE_URL}/bekreftelse?session_id={CHECKOUT_SESSION_ID}&nr=${orderNumber}`,
