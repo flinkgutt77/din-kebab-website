@@ -21,7 +21,7 @@ export default function OrderForm() {
     setLoading(true)
     setError('')
 
-    const orderNumber = String(Math.floor(1000 + Math.random() * 9000))
+    const orderNumber = String(Date.now()).slice(-5)
 
     try {
       const res = await fetch('/api/bestill', {
@@ -77,7 +77,8 @@ export default function OrderForm() {
       <div style={{ marginBottom: '16px' }}>
         <label style={labelStyle}>Telefon *</label>
         <input style={inputStyle} placeholder="+47 xxx xx xxx" value={form.phone}
-          onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required />
+          onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} required
+          type="tel" minLength={8} />
       </div>
       <div style={{ marginBottom: '24px' }}>
         <label style={labelStyle}>Ønsket hentingstid</label>

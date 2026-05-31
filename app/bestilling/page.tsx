@@ -1,6 +1,7 @@
 // app/bestilling/page.tsx
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import OrderForm from '@/components/OrderForm'
@@ -8,6 +9,20 @@ import { useCart } from '@/lib/cart'
 
 export default function BestillingPage() {
   const { items, total, removeItem } = useCart()
+  const [hydrated, setHydrated] = useState(false)
+  
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
+  if (!hydrated) {
+    return (
+      <>
+        <Navbar />
+        <main style={{ background: '#111', minHeight: '100vh' }} />
+      </>
+    )
+  }
 
   if (items.length === 0) {
     return (

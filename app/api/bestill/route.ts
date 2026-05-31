@@ -1,29 +1,46 @@
 // app/api/bestill/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import { menuItems } from '@/lib/menu'
 
 const N8N_WEBHOOK = 'https://n8n.ujstudionorge.com/webhook/kebab-orders'
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const { orderNumber, customerName, customerPhone, pickupTime, items, total } = body
-
-  // Build Telegram-friendly order text
-  const itemLines = items.map((item: { name: string; size: string; quantity: number; price: number }) =>
-    `• ${item.name} (${item.size}) × ${item.quantity} — ${item.price * item.quantity},–`
-  ).join('\n')
-
-  const payload = {
-    order_number: orderNumber,
-    customer_name: customerName,
-    customer_phone: customerPhone,
-    pickup_time: pickupTime,
-    items,
-    total,
-    message: `🆕 Ny nettbestilling #${orderNumber}!\n\n👤 ${customerName}\n📞 ${customerPhone}\n⏰ Hentes: ${pickupTime}\n\n${itemLines}\n\n💰 Totalt: ${total},–\n💳 Betales ved henting`,
-    source: 'website',
-  }
-
   try {
+    const body = await req.json()
+    const { orderNumber, customerName, customerPhone, pickupTime, items } = body
+
+    if (!customerName || !customerPhone || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'Mangler påkrevde felt' }, { status: 400 })
+    }
+
+    // Recompute total server-side from authoritative menu prices
+    const verifiedTotal = items.reduce((sum: number, item: { menuItemId: string; size: string; quantity: number }) => {
+      const menuItem = menuItems.find(m => m.id === item.menuItemId)
+      if (!menuItem) return sum
+      const size = menuItem.sizes.find(s => s.label === item.size)
+      if (!size) return sum
+      return sum + size.price * item.quantity
+    }, 0)
+
+    // Build Telegram-friendly order text using verified prices
+    const itemLines = items.map((item: { menuItemId: string; name: string; size: string; quantity: number }) => {
+      const menuItem = menuItems.find(m => m.id === item.menuItemId)
+      const size = menuItem?.sizes.find(s => s.label === item.size)
+      const price = size?.price ?? 0
+      return `• ${item.name} (${item.size}) × ${item.quantity} — ${price * item.quantity},–`
+    }).join('\n')
+
+    const payload = {
+      order_number: orderNumber,
+      customer_name: customerName,
+      customer_phone: customerPhone,
+      pickup_time: pickupTime || 'Snarest',
+      items,
+      total: verifiedTotal,
+      message: `🆕 Ny nettbestilling #${orderNumber}!\n\n👤 ${customerName}\n📞 ${customerPhone}\n⏰ Hentes: ${pickupTime || 'Snarest'}\n\n${itemLines}\n\n💰 Totalt: ${verifiedTotal},–\n💳 Betales ved henting`,
+      source: 'website',
+    }
+
     const res = await fetch(N8N_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -35,9 +52,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Webhook failed' }, { status: 502 })
     }
 
-    return NextResponse.json({ success: true, orderNumber })
+    return NextResponse.json({ success: true, orderNumber, total: verifiedTotal })
   } catch (err) {
-    console.error('Failed to reach n8n:', err)
-    return NextResponse.json({ error: 'Network error' }, { status: 500 })
+    console.error('API route error:', err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

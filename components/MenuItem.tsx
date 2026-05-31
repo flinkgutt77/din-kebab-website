@@ -2,10 +2,10 @@
 'use client'
 
 import { useState } from 'react'
-import { MenuItem as MenuItemType } from '@/lib/types'
+import { MenuItemData } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 
-export default function MenuItemCard({ item }: { item: MenuItemType }) {
+export default function MenuItemCard({ item }: { item: MenuItemData }) {
   const { addItem } = useCart()
   const [selectedSize, setSelectedSize] = useState(item.sizes[0])
   const [added, setAdded] = useState(false)

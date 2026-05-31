@@ -1,7 +1,7 @@
 // lib/cart.tsx
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react'
 import { CartItem } from './types'
 
 type CartContextType = {
@@ -17,15 +17,24 @@ const CartContext = createContext<CartContextType | null>(null)
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const hydrated = useRef(false)
 
   // Load from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('din-kebab-cart')
-    if (saved) setItems(JSON.parse(saved))
+    if (saved) {
+      try {
+        setItems(JSON.parse(saved))
+      } catch {
+        localStorage.removeItem('din-kebab-cart')
+      }
+    }
+    hydrated.current = true
   }, [])
 
   // Save to localStorage on change
   useEffect(() => {
+    if (!hydrated.current) return
     localStorage.setItem('din-kebab-cart', JSON.stringify(items))
   }, [items])
 
@@ -53,7 +62,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   function clearCart() {
     setItems([])
-    localStorage.removeItem('din-kebab-cart')
   }
 
   const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0)

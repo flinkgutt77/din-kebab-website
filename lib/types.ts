@@ -5,7 +5,7 @@ export type MenuSize = {
   price: number      // NOK
 }
 
-export type MenuItem = {
+export type MenuItemData = {
   id: string
   category: 'pizza' | 'kebab' | 'hamburger' | 'sides' | 'salat' | 'drikke'
   name: string

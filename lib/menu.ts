@@ -1,7 +1,7 @@
 // lib/menu.ts
-import { MenuItem } from './types'
+import { MenuItemData } from './types'
 
-export const menuItems: MenuItem[] = [
+export const menuItems: MenuItemData[] = [
   // ── PIZZA ──────────────────────────────────────────────
   { id: 'p1',  category: 'pizza', name: 'Lambertseter Spesial Pizza', description: 'Biff, skinke, løk og paprika',
     sizes: [{ label: 'H', price: 239 }, { label: 'S', price: 199 }, { label: 'M', price: 219 }] },
