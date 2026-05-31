@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useCart } from '@/lib/cart'
 
 export default function OrderForm() {
-  const { items, total, clearCart } = useCart()
+  const { items, total } = useCart()
   const [form, setForm] = useState({ name: '', phone: '', pickupTime: '', notat: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -39,8 +39,7 @@ export default function OrderForm() {
       const data = await res.json()
       if (!res.ok || !data.url) throw new Error(data.error || 'Noe gikk galt')
 
-      // Clear cart before redirecting to Stripe
-      clearCart()
+      // Redirect to Stripe — cart is cleared on the success page after payment is confirmed
       window.location.href = data.url
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Ukjent feil'

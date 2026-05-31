@@ -5,11 +5,13 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import Navbar from '@/components/Navbar'
 import { Suspense, useEffect, useState } from 'react'
+import { useCart } from '@/lib/cart'
 
 function BekreftelsContent() {
   const params = useSearchParams()
   const sessionId = params.get('session_id')
   const nr = params.get('nr')
+  const { clearCart } = useCart()
 
   const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading')
   const [orderData, setOrderData] = useState<{ orderNumber: string; customerName: string; total: number } | null>(null)
@@ -29,6 +31,7 @@ function BekreftelsContent() {
       .then(r => r.json())
       .then(data => {
         if (data.success) {
+          clearCart() // Only clear cart after payment is confirmed
           setOrderData(data)
           setStatus('ok')
         } else {
@@ -36,6 +39,7 @@ function BekreftelsContent() {
         }
       })
       .catch(() => setStatus('error'))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId])
 
   if (status === 'loading') {
