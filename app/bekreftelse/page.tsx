@@ -34,7 +34,7 @@ function BekreftelsContent() {
           <p style={{ color: '#ccc', margin: '0 0 8px' }}>👤 {navn}</p>
           <p style={{ color: '#ccc', margin: '0 0 8px' }}>📍 Hentes på Lambertseter</p>
           <p style={{ color: '#C8E831', fontWeight: 900, fontSize: '18px', margin: 0 }}>
-            💰 Totalt: {total},– (betales ved henting)
+            💰 Totalt: {total},–
           </p>
         </div>
 
