@@ -1,11 +1,15 @@
 // app/api/bestill/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { menuItems } from '@/lib/menu'
+import { ONLINE_ORDERING_ENABLED } from '@/lib/config'
 
 const N8N_WEBHOOK = 'https://n8n.ujstudionorge.com/webhook/kebab-orders'
 const N8N_SAVE_ORDER = 'https://n8n.ujstudionorge.com/webhook/kebab-save-order'
 
 export async function POST(req: NextRequest) {
+  if (!ONLINE_ORDERING_ENABLED) {
+    return NextResponse.json({ error: 'Nettbestilling er midlertidig stengt' }, { status: 503 })
+  }
   try {
     const body = await req.json()
     const { orderNumber, customerName, customerPhone, pickupTime, notat, items } = body

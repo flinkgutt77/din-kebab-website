@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import OrderForm from '@/components/OrderForm'
 import { useCart } from '@/lib/cart'
+import { ONLINE_ORDERING_ENABLED } from '@/lib/config'
 
 export default function BestillingPage() {
   const { items, total, removeItem } = useCart()
@@ -20,6 +21,23 @@ export default function BestillingPage() {
       <>
         <Navbar />
         <main style={{ background: '#111', minHeight: '100vh' }} />
+      </>
+    )
+  }
+
+  if (!ONLINE_ORDERING_ENABLED) {
+    return (
+      <>
+        <Navbar />
+        <main style={{ background: '#111', minHeight: '100vh', padding: '60px 24px', textAlign: 'center' }}>
+          <p style={{ color: '#fff', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>
+            Nettbestilling er midlertidig stengt.
+          </p>
+          <p style={{ color: '#888', marginBottom: '24px' }}>
+            Ring oss på <a href="tel:+4722284000" style={{ color: '#7DC61F' }}>+47 22 28 40 00</a> for å bestille.
+          </p>
+          <Link href="/" style={{ color: '#7DC61F', fontWeight: 700 }}>← Gå til menyen</Link>
+        </main>
       </>
     )
   }

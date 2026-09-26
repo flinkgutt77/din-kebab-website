@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import { MenuItemData } from '@/lib/types'
 import { useCart } from '@/lib/cart'
+import { ONLINE_ORDERING_ENABLED } from '@/lib/config'
 
 export default function MenuItemCard({ item }: { item: MenuItemData }) {
   const { addItem } = useCart()
@@ -65,7 +66,7 @@ export default function MenuItemCard({ item }: { item: MenuItemData }) {
         <p style={{ color: '#C8E831', fontWeight: 900, fontSize: '15px', margin: '0 0 8px' }}>
           {selectedSize.price},–
         </p>
-        <button
+        {ONLINE_ORDERING_ENABLED && <button
           onClick={handleAdd}
           style={{
             background: added ? '#3d6b00' : '#7DC61F',
@@ -80,7 +81,7 @@ export default function MenuItemCard({ item }: { item: MenuItemData }) {
           }}
         >
           {added ? '✓ Lagt til' : '+ Legg til'}
-        </button>
+        </button>}
       </div>
     </div>
   )

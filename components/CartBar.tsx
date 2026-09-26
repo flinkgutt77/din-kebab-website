@@ -3,11 +3,12 @@
 
 import Link from 'next/link'
 import { useCart } from '@/lib/cart'
+import { ONLINE_ORDERING_ENABLED } from '@/lib/config'
 
 export default function CartBar() {
   const { count, total } = useCart()
 
-  if (count === 0) return null
+  if (!ONLINE_ORDERING_ENABLED || count === 0) return null
 
   return (
     <div style={{

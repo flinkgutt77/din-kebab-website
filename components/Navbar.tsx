@@ -3,6 +3,7 @@
 
 import Link from 'next/link'
 import { useCart } from '@/lib/cart'
+import { ONLINE_ORDERING_ENABLED } from '@/lib/config'
 
 export default function Navbar() {
   const { count } = useCart()
@@ -26,7 +27,7 @@ export default function Navbar() {
       <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
         <Link href="/#meny" style={{ color: '#ccc', textDecoration: 'none', fontSize: '14px' }}>Meny</Link>
         <Link href="/#om-oss" style={{ color: '#ccc', textDecoration: 'none', fontSize: '14px' }}>Om oss</Link>
-        <Link href="/bestilling" style={{
+        {ONLINE_ORDERING_ENABLED && <Link href="/bestilling" style={{
           background: count > 0 ? '#7DC61F' : '#222',
           color: count > 0 ? '#000' : '#ccc',
           padding: '8px 16px',
@@ -37,7 +38,7 @@ export default function Navbar() {
           transition: 'all 0.2s',
         }}>
           🛒 {count > 0 ? `${count} vare${count > 1 ? 'r' : ''}` : 'Handlekurv'}
-        </Link>
+        </Link>}
       </div>
     </nav>
   )

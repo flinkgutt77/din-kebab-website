@@ -1,5 +1,6 @@
 // components/Hero.tsx
 import Link from 'next/link'
+import { ONLINE_ORDERING_ENABLED } from '@/lib/config'
 
 export default function Hero() {
   return (
@@ -32,7 +33,7 @@ export default function Hero() {
           fontSize: '16px',
           textDecoration: 'none',
         }}>
-          🛒 Bestill nå
+          {ONLINE_ORDERING_ENABLED ? '🛒 Bestill nå' : '📋 Se menyen'}
         </Link>
         <a href="tel:+4722284000" style={{
           background: 'rgba(0,0,0,0.2)',
@@ -47,6 +48,12 @@ export default function Hero() {
           📞 Ring oss
         </a>
       </div>
+
+      {!ONLINE_ORDERING_ENABLED && (
+        <p style={{ color: '#fff', fontWeight: 700, fontSize: '15px', margin: '-16px 0 32px' }}>
+          Nettbestilling er midlertidig stengt – ring oss for å bestille.
+        </p>
+      )}
 
       <div style={{ display: 'flex', gap: '32px', justifyContent: 'center' }}>
         {[['50+', 'Retter'], ['99,-', 'Fra'], ['⭐ 4.8', 'Vurdering']].map(([val, label]) => (

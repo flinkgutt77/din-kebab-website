@@ -2,11 +2,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { menuItems } from '@/lib/menu'
+import { ONLINE_ORDERING_ENABLED } from '@/lib/config'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://din-kebab.vercel.app'
 
 export async function POST(req: NextRequest) {
+  if (!ONLINE_ORDERING_ENABLED) {
+    return NextResponse.json({ error: 'Nettbestilling er midlertidig stengt' }, { status: 503 })
+  }
   try {
     const body = await req.json()
     const { orderNumber, customerName, customerPhone, pickupTime, notat, items } = body
