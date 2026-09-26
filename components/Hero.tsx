@@ -17,7 +17,7 @@ export default function Hero() {
         textShadow: '0 4px 20px rgba(0,0,0,0.4)',
         marginBottom: '12px',
       }}>
-        Din Kebab<br />Pizza &amp; Grill
+        Din Kebab<br />og Pizza
       </h1>
       <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '16px', marginBottom: '32px' }}>
         Pizza · Kebab · Hamburger

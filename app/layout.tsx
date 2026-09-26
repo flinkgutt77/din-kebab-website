@@ -11,7 +11,7 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'Din Kebab Pizza & Grill — Lambertseter',
+  title: 'Din Kebab og Pizza — Lambertseter',
   description: 'Bestill pizza, kebab og hamburger online. Hentes i restauranten på Lambertseter, Oslo.',
 }
 

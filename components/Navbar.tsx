@@ -21,7 +21,7 @@ export default function Navbar() {
       zIndex: 50,
     }}>
       <Link href="/" style={{ color: '#7DC61F', fontWeight: 900, fontSize: '18px', textDecoration: 'none' }}>
-        🍕 Din Kebab Pizza & Grill
+        🍕 Din Kebab og Pizza
       </Link>
 
       <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
